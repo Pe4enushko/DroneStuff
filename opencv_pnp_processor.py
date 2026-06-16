@@ -29,7 +29,20 @@ def main() -> None:
     )
     parser.add_argument("--output-file", help="Output video path for --mode file.")
     parser.add_argument("--marker-size", type=float, default=1.0, help="Square marker size in your chosen units.")
-    parser.add_argument("--min-contour-area", type=float, default=800.0, help="Ignore contours smaller than this.")
+    parser.add_argument("--y-margin", type=int, default=20, help="Ignore Harris points this close to top/bottom border.")
+    parser.add_argument("--harris-quality", type=float, default=0.01, help="Harris response threshold multiplier.")
+    parser.add_argument(
+        "--dense-group-radius",
+        type=int,
+        default=12,
+        help="Pixel radius used to group nearby Harris points before fitting the rectangle; use 0 to disable.",
+    )
+    parser.add_argument(
+        "--ransac-threshold",
+        type=float,
+        default=5.0,
+        help="RANSAC reprojection threshold for homography estimation.",
+    )
     parser.add_argument(
         "--no-normalized-window",
         action="store_true",
@@ -50,7 +63,10 @@ def main() -> None:
         output_file=args.output_file,
         camera_matrix=_parse_camera_matrix(args.camera_matrix),
         marker_size=args.marker_size,
-        min_contour_area=args.min_contour_area,
+        y_margin=args.y_margin,
+        harris_quality=args.harris_quality,
+        dense_group_radius=args.dense_group_radius,
+        ransac_reproj_threshold=args.ransac_threshold,
         show_normalized_window=not args.no_normalized_window,
     )
     processor.run()
