@@ -43,6 +43,7 @@ def main() -> None:
         result = processor.process(image, debug_name=args.debug_name)
 
     print(f"vector=({result.vector[0]:.2f}, {result.vector[1]:.2f})")
+    print(f"rotation={result.rotation:.2f}")
     print(f"perspective_angle={result.perspective_angle:.2f}")
     print(f"debug_path={Path(result.debug_path)}")
 

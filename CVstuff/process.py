@@ -11,6 +11,7 @@ from PIL import Image
 @dataclass(frozen=True)
 class ProcessResult:
     vector: tuple[float, float]
+    rotation: float
     perspective_angle: float
     image_center: tuple[float, float]
     rectangle_center: tuple[float, float]
@@ -68,6 +69,7 @@ class RectangleProcessor:
             result = self._empty_result(original, debug_name, "Not enough Harris points")
             print(f"x={result.vector[0]:.2f}")
             print(f"y={result.vector[1]:.2f}")
+            print(f"rotation={result.rotation:.2f}")
             print(f"perspective_angle={result.perspective_angle:.2f}")
             return result
 
@@ -76,6 +78,7 @@ class RectangleProcessor:
             result = self._empty_result(original, debug_name, "Rectangle not found")
             print(f"x={result.vector[0]:.2f}")
             print(f"y={result.vector[1]:.2f}")
+            print(f"rotation={result.rotation:.2f}")
             print(f"perspective_angle={result.perspective_angle:.2f}")
             return result
 
@@ -87,6 +90,7 @@ class RectangleProcessor:
             rectangle_center[0] - image_center[0],
             rectangle_center[1] - image_center[1],
         )
+        rotation = self._rectangle_rotation(corners)
         perspective_angle = self._diagonal_perspective_angle(corners)
 
         debug_path = self._save_debug_image(
@@ -95,12 +99,14 @@ class RectangleProcessor:
             image_center,
             rectangle_center,
             vector,
+            rotation,
             perspective_angle,
             debug_name,
         )
 
         result = ProcessResult(
             vector=vector,
+            rotation=rotation,
             perspective_angle=perspective_angle,
             image_center=image_center,
             rectangle_center=rectangle_center,
@@ -109,6 +115,7 @@ class RectangleProcessor:
         )
         print(f"x={result.vector[0]:.2f}")
         print(f"y={result.vector[1]:.2f}")
+        print(f"rotation={result.rotation:.2f}")
         print(f"perspective_angle={result.perspective_angle:.2f}")
         return result
 
@@ -279,11 +286,13 @@ class RectangleProcessor:
             image_center,
             (0.0, 0.0),
             0.0,
+            0.0,
             debug_name,
             message,
         )
         return ProcessResult(
             vector=(0.0, 0.0),
+            rotation=0.0,
             perspective_angle=0.0,
             image_center=image_center,
             rectangle_center=image_center,
@@ -298,6 +307,7 @@ class RectangleProcessor:
         image_center: tuple[float, float],
         rectangle_center: tuple[float, float],
         vector: tuple[float, float],
+        rotation: float,
         perspective_angle: float,
         debug_name: str,
         message: str | None = None,
@@ -318,7 +328,7 @@ class RectangleProcessor:
         cv2.circle(output, rectangle_center_px, 5, (0, 0, 255), -1)
         cv2.putText(
             output,
-            f"vec=({vector[0]:.1f}, {vector[1]:.1f}) angle={perspective_angle:.1f}",
+            f"vec=({vector[0]:.1f}, {vector[1]:.1f}) rot={rotation:.1f} angle={perspective_angle:.1f}",
             (10, output.shape[0] - 15),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.7,
@@ -332,6 +342,16 @@ class RectangleProcessor:
         if not cv2.imwrite(str(debug_path), output):
             raise RuntimeError(f"Could not write debug image: {debug_path}")
         return debug_path
+
+    @staticmethod
+    def _rectangle_rotation(corners: np.ndarray) -> float:
+        top_edge = corners[1] - corners[0]
+        angle = float(np.degrees(np.arctan2(top_edge[1], top_edge[0])))
+        while angle <= -90.0:
+            angle += 180.0
+        while angle > 90.0:
+            angle -= 180.0
+        return angle
 
     @staticmethod
     def _diagonal_perspective_angle(corners: np.ndarray) -> float:
