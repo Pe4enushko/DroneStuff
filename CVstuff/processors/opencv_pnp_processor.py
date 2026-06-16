@@ -5,7 +5,7 @@ from typing import Iterable
 
 import numpy as np
 
-from pnp_processor import OpenCVPnPProcessor, OutputMode
+from CVstuff.pnp_processor import OpenCVPnPProcessor, OutputMode
 
 
 def _parse_camera_matrix(values: Iterable[float] | None) -> np.ndarray | None:

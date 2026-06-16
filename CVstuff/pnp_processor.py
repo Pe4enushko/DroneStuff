@@ -205,7 +205,7 @@ class OpenCVPnPProcessor:
         return cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
 
     def _harris_points(self, harris_response: np.ndarray, image_height: int) -> np.ndarray:
-        max_response = 0.01 * harris_response.max()
+        max_response = harris_response.max()
         if max_response <= 0:
             return np.empty((0, 2), dtype=np.float32)
 
@@ -315,10 +315,16 @@ class OpenCVPnPProcessor:
             return video_source, False
 
         source = int(video_source) if isinstance(video_source, str) and video_source.isdigit() else video_source
-        capture = cv2.VideoCapture(source)
+        capture = self._video_capture(source)
         if not capture.isOpened():
             raise RuntimeError(f"Could not open video source: {video_source!r}")
         return capture, True
+
+    @staticmethod
+    def _video_capture(source: Any) -> cv2.VideoCapture:
+        if source == 0 and hasattr(cv2, "CAP_DSHOW"):
+            return cv2.VideoCapture(source, cv2.CAP_DSHOW)
+        return cv2.VideoCapture(source)
 
     @staticmethod
     def _is_png_image_source(video_source: Any) -> bool:
