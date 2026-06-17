@@ -1,0 +1,70 @@
+#
+# Дефолтная конфигурация параметров пространства симуляции корректировки посадки дрона
+# (Если надо что-то поменять – раскомментить)
+#
+
+[core]
+# Базовые параметры генерации пространства симуляции
+#
+# IS_SEEDED         = True
+# SEED              = 0
+# SCALE             = 32 # пикселя/м
+# MAX_DIST_ERROR    = 16
+
+[field]
+# Параметры генерации поля на основе шума Перлина
+#
+# FIELD_W           = 512
+# FIELD_L           = 512
+# OCTAVES           = 8
+# NOISE_SCALE       = 4
+# BASE_BRIGHTNESS   = 96
+# STEP              = 8
+# COMP_RATE         = 4
+
+[platform]
+# Параметры генерации площадки
+#
+# PLAT_W                = 64
+# PLAT_L                = 64
+# PLAT_H                = 48
+# VERTEX_DISPACEMENT    = 16
+# PLAT_DISPLACEMENT     = 96 # 3 метра
+
+[drone]
+# Параметры дрона
+#
+# DRONE_W           = 48
+# DRONE_L           = 48
+# DRONE_H           = 16
+# INIT_ALTITUDE     = 1000
+
+[camera]
+# Параметры камеры
+#
+# PITCH             = -90.0
+# YAW               = 0.0
+# FOV_DEG           = 50.0
+# V_FOV_DEG         = 50.0
+# NEAR              = 0.1
+# FAR               = 10000.0
+
+[render]
+# Параметры рендера
+#
+WINDOW_W  = 1920
+WINDOW_H  = 1080
+FPS       = 60
+
+[raytracing]
+# Параметры рейтрейсинга (эхолокации)
+#
+# RAY_STEP      = 4
+# MAX_RAY_DIST  = 1000.0
+
+[controls]
+# Параметры управления свободной камерой
+#
+# SPEED             = 100
+# MOUSE_SENSITIVITY = 0.002
+# ZOOM_SPEED        = 0.05
